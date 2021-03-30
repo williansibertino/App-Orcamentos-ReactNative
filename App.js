@@ -15,27 +15,40 @@ export default class App extends React.Component {
     resultado: 0,
   };
 
+  
+
   // Função das Ferragens
   colunasFerragem = () => {
+
+
     const metragemTotal = (this.state.quantColuna * this.state.quantPerna) * this.state.metragemPerna;
     const varasTotal = (metragemTotal/12)
 
     this.setState ({
       resultado: Math.ceil(varasTotal)
     });
+
+    if (this.state.quantColuna <= 0 && this.state.quantPerna <= 0 && this.state.metragemPerna <= 0) {
+      alert("Erro, por favor insira os dados corretamente.");
+    } else if (metragemTotal <= 1000) {
+      alert("Sucesso!");
+    } else if (metragemTotal > 1000) {
+      alert("A metragem excedeu o limite!!!");
+    }
   }  
+
 
   render() {
     return(
       <ScrollView style={styles.app}>
 
-        <Text style={styles.tituloBox}>Cálculo de Colunas</Text>
-
         {/* Calculo das Colunas */}
+        
         <View style={styles.box}>
+        <Text style={styles.tituloBox}>Cálculo de Colunas</Text>
           <View style={styles.boxResultado}>
             <Text style={styles.resultado}>Resultado</Text>
-            <Text style={styles.calculo}>{this.state.resultado} Varas</Text>
+            <Text style={styles.calculo}>{this.state.resultado} Varas (12m)</Text>
           </View>
 
           <View style={styles.itemBox}>
@@ -74,8 +87,31 @@ export default class App extends React.Component {
         </View>
         
         <View style={styles.box2}>
-        
+            <Text style={styles.tituloBox}>Cálculo de Estrivos</Text>
+            <View style={styles.painel}>
+              <View style={[styles.boxResultado, {width: 130}]}>
+                <Text style={styles.resultado}>Resultado</Text>
+                <Text style={styles.calculo}>Quantidade</Text>
+              </View>
+              <View style={[styles.boxResultado, {width: 130}]}>
+                <Text style={styles.resultado}>Resultado</Text>
+                <Text style={styles.calculo}>varas</Text>
+              </View>
+            </View>
 
+            <View style={styles.itemBox}>
+              <Text style={styles.descricaoItem}>Espaçamentos dos Estrivos</Text>
+              <TextInput style={styles.dados} placeholder={'Digite a Medida em centímetros'}
+
+              />
+            </View>
+            <View style={styles.itemBox}>
+              <Text style={styles.descricaoItem}>Comprimento dos Estrivos</Text>
+              <TextInput style={styles.dados} placeholder={'Digite aqui o comprimento de cada estrivo em cm'}
+
+              />
+            </View>
+            
         </View>
 
       </ScrollView> // View Master
@@ -93,15 +129,16 @@ const styles = StyleSheet.create({
 
   // Linha 23 a 39
   tituloBox: {
-    fontSize: 20,
+    fontSize: 25,
     marginBottom: 30,
-    color: '#000',
+    color: '#fafafa',
     textAlign: 'center',
   },
   descricaoItem: {
-    fontSize: 16,
-    padding:2,
+    fontSize: 18,
+    padding:5,
     textAlign: 'center',
+    color:'#ecf0f1'
   },
   itemBox: {
     marginBottom: 20,
@@ -145,5 +182,19 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     borderRadius: 5,
     marginVertical: 5,
+  },
+  box2: {
+    backgroundColor: '#2980b9',
+    paddingVertical: 15,
+    borderRadius: 5,
+    marginVertical: 5,
+  },
+  painel: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  itemPainel: {
+    flex:1,
   }
 });
