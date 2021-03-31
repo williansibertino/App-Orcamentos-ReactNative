@@ -5,14 +5,25 @@ import Constants from 'expo-constants';
 import { Button, TextInput } from 'react-native-paper';
 
 export default class App extends React.Component {
-  // Variaveis
+
+  // Variaveis Estaticas
   state = {
+    // Primeiro Bloco
     quantColuna: 0,
     quantPerna: 0,
     metragemPerna: 0,
     metragemTotal: 0,
     varasTotal: 0,
-    resultado: 0,
+    resultadoColuna: 0,
+    varaTamanhopadrao: 12,
+    // Segundo Bloco
+    espacoEstrivos: 0,
+    comprimentoEstrivos: 0,
+    metragemEstrivos : 0,
+    quantidadeEstrivos: 0,
+    varasEstrivos: 0,
+    resultadoVaras: 0,
+    resultadoEstrivos: 0,
   };
 
   
@@ -20,14 +31,27 @@ export default class App extends React.Component {
   // Função das Ferragens
   colunasFerragem = () => {
 
+    // Valores para conversão em metro
+    const varaTamanhopadrao = 12;
+    const metro = 100;
 
+    // Primeiro Bloco da Função
     const metragemTotal = (this.state.quantColuna * this.state.quantPerna) * this.state.metragemPerna;
-    const varasTotal = (metragemTotal/12)
-
+    const varasTotal = metragemTotal / varaTamanhopadrao;
     this.setState ({
-      resultado: Math.ceil(varasTotal)
+      resultadoColuna: Math.ceil(varasTotal)
     });
 
+    // Segundo Bloco da Função
+    const quantidadeEstrivos = (this.state.quantColuna * this.state.metragemPerna) / (this.state.espacoEstrivos / metro);
+    const metragemEstrivos = (this.state.comprimentoEstrivos / metro) * quantidadeEstrivos;
+    const varasEstrivos = metragemEstrivos / varaTamanhopadrao;
+    this.setState ({
+      resultadoVaras : Math.ceil(varasEstrivos),
+      resultadoEstrivos: Math.ceil(quantidadeEstrivos),
+    })
+
+    // Tratamento de Erros Básico
     if (this.state.quantColuna <= 0 && this.state.quantPerna <= 0 && this.state.metragemPerna <= 0) {
       alert("Erro, por favor insira os dados corretamente.");
     } else if (metragemTotal <= 1000) {
@@ -41,14 +65,13 @@ export default class App extends React.Component {
   render() {
     return(
       <ScrollView style={styles.app}>
-
+  
         {/* Calculo das Colunas */}
-        
         <View style={styles.box}>
         <Text style={styles.tituloBox}>Cálculo de Colunas</Text>
           <View style={styles.boxResultado}>
-            <Text style={styles.resultado}>Resultado</Text>
-            <Text style={styles.calculo}>{this.state.resultado} Varas (12m)</Text>
+            <Text style={styles.resultado}>Varas de 12 M</Text>
+            <Text style={styles.calculo}>{this.state.resultadoColuna}</Text>
           </View>
 
           <View style={styles.itemBox}>
@@ -86,32 +109,41 @@ export default class App extends React.Component {
           </View>
         </View>
         
+        {/* Calculo dos Estrivos */}
         <View style={styles.box2}>
             <Text style={styles.tituloBox}>Cálculo de Estrivos</Text>
             <View style={styles.painel}>
               <View style={[styles.boxResultado, {width: 130}]}>
-                <Text style={styles.resultado}>Resultado</Text>
-                <Text style={styles.calculo}>Quantidade</Text>
+                <Text style={styles.resultado}>Quant. Estrivos</Text>
+                <Text style={styles.calculo}>{this.state.resultadoEstrivos}</Text>
               </View>
               <View style={[styles.boxResultado, {width: 130}]}>
-                <Text style={styles.resultado}>Resultado</Text>
-                <Text style={styles.calculo}>varas</Text>
+                <Text style={styles.resultado}>Varas de 12 Metros</Text>
+                <Text style={styles.calculo}>{this.state.resultadoVaras}</Text>
               </View>
             </View>
-
+        
             <View style={styles.itemBox}>
               <Text style={styles.descricaoItem}>Espaçamentos dos Estrivos</Text>
-              <TextInput style={styles.dados} placeholder={'Digite a Medida em centímetros'}
-
+              <TextInput style={styles.dados} placeholder={'Espaçamento em centímetros'} onChangeText={
+                valor => {
+                  this.setState ({espacoEstrivos: valor.replace(',','.')});
+                }
+              }
               />
             </View>
             <View style={styles.itemBox}>
               <Text style={styles.descricaoItem}>Comprimento dos Estrivos</Text>
-              <TextInput style={styles.dados} placeholder={'Digite aqui o comprimento de cada estrivo em cm'}
-
+              <TextInput style={styles.dados} placeholder={'Comprimento em cm'} onChangeText={
+                valor => {
+                  this.setState ({comprimentoEstrivos: valor.replace(',','.')});
+                }
+              }              
               />
             </View>
-            
+            <View>
+              <Button mode="contained" style={styles.btn} onPress={this.colunasFerragem}>Calcular</Button>
+            </View>
         </View>
 
       </ScrollView> // View Master
@@ -126,8 +158,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     height: 1000,
   },
-
-  // Linha 23 a 39
   tituloBox: {
     fontSize: 25,
     marginBottom: 30,
@@ -147,8 +177,6 @@ const styles = StyleSheet.create({
     width: 280,
     alignSelf: 'center',
   },
-
-  // Linha 13 a 20
   boxResultado: {
     width: 150,
     backgroundColor: '#2ecc71',
@@ -188,6 +216,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 5,
     marginVertical: 5,
+    marginBottom: 30,
   },
   painel: {
     flex: 1,
