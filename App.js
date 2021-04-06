@@ -1,229 +1,278 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, ScrollView } from 'react-native';
+import { Text, View, StyleSheet, TextInput, ScrollView} from 'react-native';
 import Constants from 'expo-constants';
 
-import { Button, TextInput } from 'react-native-paper';
+import {Button} from 'react-native-paper';
+
 
 export default class App extends React.Component {
-
-  // Variaveis Estaticas
+// Variveis Estáticas
   state = {
-    // Primeiro Bloco
-    quantColuna: 0,
-    quantPerna: 0,
-    metragemPerna: 0,
-    metragemTotal: 0,
-    varasTotal: 0,
-    resultadoColuna: 0,
-    varaTamanhopadrao: 12,
-    // Segundo Bloco
-    espacoEstrivos: 0,
-    comprimentoEstrivos: 0,
-    metragemEstrivos : 0,
+    // Dados de Entrada
+    dadoColuna : 0,
+    dadoPerna : 0,
+    dadoPernaMetro: 0,
+    dadoEspacamento: 0,
+    dadoComprimento: 0,
+    dadoValor1: 0,
+    dadoValor2: 0,
+    // Var 1 bloco
+    metragemColuna: 0,
+    varasColuna: 0,
+    valorColuna: 0,
+    resultadoVaras: 0,
+    valorTotalColuna: 0,
+    // Var 2 bloco
     quantidadeEstrivos: 0,
     varasEstrivos: 0,
-    resultadoVaras: 0,
+    valorEstrivos: 0,
     resultadoEstrivos: 0,
+    valorTotalEstrivo: 0,
   };
 
-  
-
-  // Função das Ferragens
-  colunasFerragem = () => {
-
-    // Valores para conversão em metro
-    const varaTamanhopadrao = 12;
-    const metro = 100;
-
-    // Primeiro Bloco da Função
-    const metragemTotal = (this.state.quantColuna * this.state.quantPerna) * this.state.metragemPerna;
-    const varasTotal = metragemTotal / varaTamanhopadrao;
-    this.setState ({
-      resultadoColuna: Math.ceil(varasTotal)
-    });
-
-    // Segundo Bloco da Função
-    const quantidadeEstrivos = (this.state.quantColuna * this.state.metragemPerna) / (this.state.espacoEstrivos / metro);
-    const metragemEstrivos = (this.state.comprimentoEstrivos / metro) * quantidadeEstrivos;
-    const varasEstrivos = metragemEstrivos / varaTamanhopadrao;
-    this.setState ({
-      resultadoVaras : Math.ceil(varasEstrivos),
-      resultadoEstrivos: Math.ceil(quantidadeEstrivos),
-    })
-
-    // Tratamento de Erros Básico
-    if (this.state.quantColuna <= 0 && this.state.quantPerna <= 0 && this.state.metragemPerna <= 0) {
-      alert("Erro, por favor insira os dados corretamente.");
-    } else if (metragemTotal <= 1000) {
-      alert("Sucesso!");
-    } else if (metragemTotal > 1000) {
-      alert("A metragem excedeu o limite!!!");
-    }
-  }  
+// função das Ferragens
+  calculoFerragens = () => {
+  // Valores para conversão em metro
+  const varaTamanhopadrao = 12;
+  const metro = 100;    
+  // 1 bloco
+  const metragemColuna = (this.state.dadoColuna * this.state.dadoPerna) * this.state.dadoPernaMetro;
+  const varasColuna = (metragemColuna / varaTamanhopadrao);
+  const valorColuna = (varasColuna * this.state.dadoValor1);
+  // 2 bloco
+  const quantidadeEstrivos = (this.state.dadoColuna * this.state.dadoPernaMetro) / (this.state.dadoEspacamento / metro);
+  const varasEstrivos = ((this.state.dadoComprimento / metro) * quantidadeEstrivos) / varaTamanhopadrao;
+  const valorEstrivos = (varasEstrivos * this.state.dadoValor2);
+  // Set State
+  this.setState ({
+    resultadoVaras: Math.ceil(varasColuna),
+    resultadoEstrivos: Math.ceil(varasEstrivos),
+    valorTotalColuna: Math.ceil(valorColuna),
+    valorTotalEstrivo: Math.ceil(valorEstrivos),
+  });
+  }
 
 
   render() {
-    return(
-      <ScrollView style={styles.app}>
-  
-        {/* Calculo das Colunas */}
+    return (
+      <ScrollView style={styles.container}> 
+        <Text style={styles.textoHeader}>Calculadora de Ferragens</Text>
         <View style={styles.box}>
-        <Text style={styles.tituloBox}>Cálculo de Colunas</Text>
-          <View style={styles.boxResultado}>
-            <Text style={styles.resultado}>Varas de 12 M</Text>
-            <Text style={styles.calculo}>{this.state.resultadoColuna}</Text>
-          </View>
-
-          <View style={styles.itemBox}>
-            <Text style={styles.descricaoItem}>Quantidades de Colunas</Text>
-            <TextInput  style={styles.dados} label='Número de Quantidades de Colunas' onChangeText={
-              valorEntrada => {
-                this.setState({
-                  quantColuna: valorEntrada.replace(',','.')
-                });
-              }
-            } />
-          </View>
-          <View style={styles.itemBox}>
-            <Text style={styles.descricaoItem}>Pernas por coluna</Text>
-            <TextInput style={styles.dados}label='Quantas Pernas Vai em Cada Coluna' onChangeText={
-              valorEntrada => {
-                this.setState({
-                  quantPerna: valorEntrada.replace(',','.')
-                });
-              }
-            } />
-          </View>
-          <View style={styles.itemBox}>
-            <Text style={styles.descricaoItem}>Metragem de cada perna</Text>
-            <TextInput style={styles.dados} label='Tamanho em metros de cada perna' onChangeText={
-              valorEntrada => {
-                this.setState ({
-                  metragemPerna: valorEntrada.replace(',','.')
-                });
-              }
-            } />
-          </View>
-          <View>
-            <Button style={styles.btn} mode='contained' onPress={this.colunasFerragem}>Calcular</Button>
-          </View>
+          <Text style={styles.texto}>Insira a quantidade de COLUNAS ou VIGAS.</Text>
+          <TextInput keyboardType='numeric' selectionColor='#fff' placeholder='0 un' placeholderTextColor='#fff' style={styles.dados} 
+          onChangeText={
+            valor => { this.setState ({ dadoColuna : valor })}
+          }      
+          />
         </View>
-        
-        {/* Calculo dos Estrivos */}
+        <View style={styles.box}>
+          <Text style={styles.texto}>Insira a quantidade de PERNAS da coluna ou viga.</Text>
+          <TextInput keyboardType='numeric' selectionColor='#fff' placeholder='0 un' placeholderTextColor='#fff' style={styles.dados}  
+          onChangeText={
+            valor => {this.setState ({dadoPerna : valor})}
+          }
+          />
+        </View>
+        <View style={styles.box}>
+          <Text style={styles.texto}>Insira a METRAGEM da perna da coluna ou viga.</Text>
+          <TextInput keyboardType='numeric' selectionColor='#fff' placeholder='0 mt' placeholderTextColor='#fff' style={styles.dados} 
+          onChangeText={
+            valor => {this.setState ({dadoPernaMetro : valor})}
+          }          
+          />
+        </View>
+        <View style={styles.box}>
+          <Text style={styles.texto}>Insira o espaçamento entre os estrivos em cm.</Text>
+          <TextInput keyboardType='numeric' selectionColor='#fff' placeholder='0 cm' placeholderTextColor='#fff' style={styles.dados} 
+          onChangeText={
+            valor => {this.setState ({dadoEspacamento : valor})}
+          }          
+          />
+        </View>
+        <View style={styles.box}>
+          <Text style={styles.texto}>Insira o COMPRIMENTO dos estrivos em cm</Text>
+          <TextInput keyboardType='numeric' selectionColor='#fff' placeholder='0 cm' placeholderTextColor='#fff' style={styles.dados} 
+          onChangeText={
+            valor => {this.setState ({dadoComprimento : valor})}
+          }
+          />
+        </View>
         <View style={styles.box2}>
-            <Text style={styles.tituloBox}>Cálculo de Estrivos</Text>
-            <View style={styles.painel}>
-              <View style={[styles.boxResultado, {width: 130}]}>
-                <Text style={styles.resultado}>Quant. Estrivos</Text>
-                <Text style={styles.calculo}>{this.state.resultadoEstrivos}</Text>
-              </View>
-              <View style={[styles.boxResultado, {width: 130}]}>
-                <Text style={styles.resultado}>Varas de 12 Metros</Text>
-                <Text style={styles.calculo}>{this.state.resultadoVaras}</Text>
-              </View>
-            </View>
-        
-            <View style={styles.itemBox}>
-              <Text style={styles.descricaoItem}>Espaçamentos dos Estrivos</Text>
-              <TextInput style={styles.dados} placeholder={'Espaçamento em centímetros'} onChangeText={
-                valor => {
-                  this.setState ({espacoEstrivos: valor.replace(',','.')});
-                }
-              }
-              />
-            </View>
-            <View style={styles.itemBox}>
-              <Text style={styles.descricaoItem}>Comprimento dos Estrivos</Text>
-              <TextInput style={styles.dados} placeholder={'Comprimento em cm'} onChangeText={
-                valor => {
-                  this.setState ({comprimentoEstrivos: valor.replace(',','.')});
-                }
-              }              
-              />
-            </View>
-            <View>
-              <Button mode="contained" style={styles.btn} onPress={this.colunasFerragem}>Calcular</Button>
-            </View>
+          <View style={[styles.itembox,{marginRight: 5}]}>
+            <Text style={styles.texto3}>Valor Vara 5.16</Text>
+            <TextInput keyboardType='numeric' selectionColor='#fff' placeholder='R$ 0,00' placeholderTextColor='#fff' style={styles.dados2} 
+            onChangeText={
+              valor => {this.setState ({dadoValor1 : valor})}
+            }            
+            />
+          </View>
+          <View style={[styles.itembox,{marginLeft: 5}]}>
+            <Text style={styles.texto3}>Valor Vara 4.2</Text>
+            <TextInput keyboardType='numeric' selectionColor='#fff' placeholder='R$ 0,00' placeholderTextColor='#fff' style={styles.dados2} 
+            onChangeText={
+              valor => {this.setState ({dadoValor2 : valor})}
+            }            
+            />
+          </View>
         </View>
+        <Button mode='contained' style={styles.btn} onPress={this.calculoFerragens}>CALCULAR</Button>
 
-      </ScrollView> // View Master
+        <Text style={[styles.texto,{alignSelf: 'center', marginVertical: 15, fontWeight: 'bold'}]}>Role para baixo para ver os resultados.</Text>
+
+        <View style={styles.box3}>
+          <Text style={styles.texto2}>Resultado Colunas ou Vigas</Text>
+          <View style={{flexDirection: 'row'}}>
+            <View style={styles.itembox2}>
+              <Text style={styles.texto3}>Varas de 12M</Text>
+              <Text style={styles.texto4}>{this.state.resultadoVaras} un</Text>
+            </View>
+            <View style={styles.itembox2}>
+              <Text style={styles.texto3}>Valor Total</Text>
+              <Text style={styles.texto4}>R$ {this.state.valorTotalColuna}</Text>
+            </View>
+          </View>
+        </View>
+        <View style={[styles.box3,{marginBottom:30}]}>
+          <Text style={styles.texto2}>Resultado dos Estrivos</Text>
+          <View style={{flexDirection: 'row'}}>
+            <View style={styles.itembox2}>
+              <Text style={styles.texto3}>Varas de 12M</Text>
+              <Text style={styles.texto4}>{this.state.resultadoEstrivos} un</Text>
+            </View>
+            <View style={styles.itembox2}>
+              <Text style={styles.texto3}>Valor Total</Text>
+              <Text style={styles.texto4}>R$ {this.state.valorTotalEstrivo}</Text>
+            </View>
+          </View>
+        </View>
+      </ScrollView>
     );
   }
 }
 
-
+// Estilização
 const styles = StyleSheet.create({
-  app: {
+  container: {
+    flex: 1,
+    backgroundColor: '#0a3d62',
+    paddingHorizontal: 8,
     paddingVertical: 20,
-    paddingHorizontal: 15,
-    height: 1000,
   },
-  tituloBox: {
-    fontSize: 25,
-    marginBottom: 30,
-    color: '#fafafa',
-    textAlign: 'center',
-  },
-  descricaoItem: {
-    fontSize: 18,
-    padding:5,
-    textAlign: 'center',
-    color:'#ecf0f1'
-  },
-  itemBox: {
-    marginBottom: 20,
-  },
-  dados: {
-    width: 280,
-    alignSelf: 'center',
-  },
-  boxResultado: {
-    width: 150,
-    backgroundColor: '#2ecc71',
-    alignSelf: 'center',
-    padding: 8,
-    borderRadius: 10,
-    marginBottom: 30,
-  },
-  resultado: {
-    textAlign: 'center',
-    fontSize: 18,
-    padding: 5,
-    color: '#ecf0f1',
-    textTransform: 'uppercase',
-    fontWeight: 'bold',
-  },
-  calculo: {
-    textAlign: 'center',
+  textoHeader: {
+    color: '#38ada9',
     fontSize: 20,
-    paddingVertical: 10,
-    borderRadius: 10,
-    backgroundColor: '#27ae60',
-    color: '#ecf0f1',
+    padding: 10,
+    borderBottomColor: '#3c6382',
+    borderBottomWidth: 2,
+    marginBottom: 10,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    textAlign: 'center',
   },
-  btn: {
-    width: 280,
-    alignSelf: 'center',
+  texto : {
+    flex: 2,
+    padding: 10,
+    color: '#fff',
+    fontSize: 16,
+    alignItems: 'flex-start',
+
+  },
+  texto2: {
+    color: '#fff',
+    fontSize: 20,
+    textAlign: 'center',
+    padding: 5,
+  },
+  texto3: {
+    fontSize: 18,
+    paddingVertical: '2%',
+    color:'#fff',
+  },
+  texto4: {
+    color: '#fff',
+    fontSize: 20,
+    textAlign: 'center',
+    backgroundColor: '#38ada9',
+    borderRadius: 5,
+    padding: 10,
+    width: '100%',
   },
   box: {
-    backgroundColor: '#1abc9c',
-    paddingVertical: 20,
-    borderRadius: 5,
+    flexDirection: 'row',
+    width: 320,
+    height: 60,
+    alignSelf: 'center',
+    backgroundColor: '#3c6382',
     marginVertical: 5,
+    borderRadius: 15,
+    shadowColor: '#ffffff',
+    shadowOffset: {	width: 0,	height: 5,},
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+    elevation: 10,
   },
   box2: {
-    backgroundColor: '#2980b9',
-    paddingVertical: 15,
-    borderRadius: 5,
-    marginVertical: 5,
-    marginBottom: 30,
-  },
-  painel: {
-    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    width: 320,
+    height: 80,
+    alignSelf: 'center',
+    marginVertical: 5,
   },
-  itemPainel: {
-    flex:1,
-  }
+  box3: {
+    width: 320,
+    padding: 5,
+    alignSelf: 'center',
+    marginVertical: 5,
+    backgroundColor: '#3c6382',
+    borderRadius: 5,
+  },
+  dados: {
+    width: 100,
+    margin: 5,
+    borderRadius: 15,
+    backgroundColor: '#60a3bc',
+    fontSize: 25,
+    textAlign: 'center',
+    color: '#0a3d62',
+  },
+  dados2: {
+    width: 145,
+    marginBottom: 5,
+    padding: 10,
+    backgroundColor: '#60a3bc',
+    borderRadius: 15,
+    fontSize: 16,
+  },
+  itembox: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    alignContent: 'space-around',
+    backgroundColor: '#3c6382',
+    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOffset: {	width: 0,	height: 5,},
+    shadowOpacity: 0.34,
+    shadowRadius: 6.27,
+    elevation: 5,
+  },
+  itembox2: {
+    flex: 1,
+    alignItems: 'center',
+    backgroundColor: '#079992',
+    marginVertical: 10,
+    marginHorizontal: 10,
+    padding: 10,
+    borderRadius: 5,
+  },
+  btn : {
+    height: 50,
+    width: 320,
+    marginVertical: 5,
+    alignSelf: 'center',
+    borderRadius: 20,
+    justifyContent: 'center',
+    backgroundColor: '#4a69bd',
+    color: '#000',
+  },
 });
