@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { Text, View, StyleSheet, TextInput, ScrollView} from 'react-native';
+import { Text, View, StyleSheet, TextInput, ScrollView, Alert} from 'react-native';
 import Constants from 'expo-constants';
 
 import {Button} from 'react-native-paper';
 
 
 export default class App extends React.Component {
-// Variveis Estáticas
+// Variáveis Estáticas
   state = {
     // Dados de Entrada
     dadoColuna : 0,
@@ -50,6 +50,30 @@ export default class App extends React.Component {
     valorTotalColuna: Math.ceil(valorColuna),
     valorTotalEstrivo: Math.ceil(valorEstrivos),
   });
+
+  // Tratamento de erros básicos
+  if ((this.state.dadoColuna <= 0) 
+    || (this.state.dadoPerna <= 0) 
+    || (this.state.dadoPernaMetro <= 0) 
+    || (this.state.dadoEspacamento <= 0) 
+    || (this.state.dadoComprimento <= 0)) {
+      Alert.alert(
+        //title 
+        "Erro",
+        //body
+        "Opa, algum dado não foi utilizado corretamente, tente entrar com todas as informações.");
+  } else if ((this.state.dadoColuna > 0) 
+    && (this.state.dadoPerna > 0) 
+    && (this.state.dadoPernaMetro > 0) 
+    && (this.state.dadoEspacamento > 0) 
+    && (this.state.dadoComprimento > 0)) {
+      Alert.alert(
+        //title
+        'Orçamento concluído com sucesso.',
+        //body
+        'Role para baixo para ver o resultado.',
+      );
+    } 
   }
 
 
